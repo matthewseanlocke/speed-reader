@@ -8,7 +8,7 @@ No build system, package manager, or automated tests. Runs offline by opening th
 - Entry point: `index.html`
 - Assets: PNG images (reference only)
 - No bundler, no dependencies, no module system
-- Version: v4.30 (pinned to bottom of screen on all views)
+- Version: v4.31 (pinned to bottom of screen on all views)
 
 ## Build / Lint / Test
 No automated build, lint, or test commands.
