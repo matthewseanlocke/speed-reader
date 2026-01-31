@@ -203,31 +203,48 @@
         }
 
         .start-btn {
-            background: rgba(78, 205, 196, 0.2);
-            color: #4ecdc4;
-            border: 2px solid rgba(78, 205, 196, 0.8);
-            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             padding: 25px 50px;
-            animation: pulse 2s ease-in-out infinite;
+            animation: startButtonFlash 2s ease-in-out infinite;
         }
 
         .start-btn:hover {
-            box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
-            border-color: #4ecdc4;
-            color: #7de2db;
-            text-shadow: 0 0 15px rgba(78, 205, 196, 0.8);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
             animation: none;
         }
 
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
-                box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
             }
             50% {
                 transform: scale(1.05);
-                box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
+                box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        @keyframes startButtonFlash {
+            0%, 100% {
+                background: rgba(255, 255, 255, 0.2);
+                color: #ffffff;
+                border-color: rgba(255, 255, 255, 0.8);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                background: rgba(255, 68, 68, 0.2);
+                color: #ff4444;
+                border-color: rgba(255, 68, 68, 0.8);
+                box-shadow: 0 0 30px rgba(255, 68, 68, 0.5), inset 0 0 20px rgba(255, 68, 68, 0.2);
+                text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
             }
         }
 
@@ -607,19 +624,21 @@
         }
 
         .reading-buttons .start-btn {
-            background: rgba(78, 205, 196, 0.2);
-            color: #4ecdc4;
-            border: 2px solid rgba(78, 205, 196, 0.8);
-            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             padding: 20px 30px;
+            animation: startButtonFlash 2s ease-in-out infinite;
         }
 
         .reading-buttons .start-btn:hover {
-            box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
-            border-color: #4ecdc4;
-            color: #7de2db;
-            text-shadow: 0 0 15px rgba(78, 205, 196, 0.8);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            animation: none;
         }
 
         .exit-btn {
@@ -830,7 +849,7 @@
 
     <div class="progress-bar" id="progressBar"></div>
 
-    <div class="version-badge" id="versionBadge">v4.32</div>
+    <div class="version-badge" id="versionBadge">v4.33</div>
 
     <script>
         const textInput = document.getElementById('textInput');
