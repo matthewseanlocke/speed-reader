@@ -710,6 +710,10 @@
         }
 
         @media (orientation: portrait) and (max-width: 600px) {
+            body {
+                align-items: flex-start;
+            }
+
             .word-display {
                 font-size: 50px;
             }
@@ -718,14 +722,20 @@
         @media (orientation: landscape) and (max-width: 600px) {
             body {
                 align-items: center;
+                padding-top: 10px;
             }
 
             .word-display {
-                font-size: 40px;
+                font-size: 35px;
             }
 
             .reading-controls {
                 bottom: 20px;
+                padding: 10px 20px;
+            }
+
+            .reading-overlay {
+                padding-bottom: 40px;
             }
         }
     </style>
@@ -850,7 +860,7 @@
 
     <div class="progress-bar" id="progressBar"></div>
 
-    <div class="version-badge" id="versionBadge">v4.29</div>
+    <div class="version-badge" id="versionBadge">v4.30</div>
 
     <script>
         const textInput = document.getElementById('textInput');
@@ -1305,10 +1315,21 @@ For who would bear the whips and scorns of time, Th' oppressor's wrong, the prou
         });
 
         window.addEventListener('resize', () => {
-            if (isReading) {
-                showCurrentWord();
-            }
-            updatePreview();
+            setTimeout(() => {
+                if (isReading) {
+                    showCurrentWord();
+                }
+                updatePreview();
+            }, 100);
+        });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (isReading) {
+                    showCurrentWord();
+                }
+                updatePreview();
+            }, 200);
         });
 
         document.addEventListener('keydown', (e) => {
