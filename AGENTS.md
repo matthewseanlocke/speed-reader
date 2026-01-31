@@ -4,6 +4,7 @@ This repository is a single-file, static HTML app in `index.html`.
 No build system, package manager, or automated tests. Runs offline by opening the HTML file directly.
 
 ## Repository Overview
+- Repository: https://github.com/matthewseanlocke/speed-reader
 - Entry point: `index.html`
 - Assets: PNG images (reference only)
 - No bundler, no dependencies, no module system
@@ -12,7 +13,7 @@ No build system, package manager, or automated tests. Runs offline by opening th
 ## Build / Lint / Test
 No automated build, lint, or test commands.
 
-Manual run: Open `speed-reader.html` in a browser
+Manual run: Open `index.html` in a browser
 
 Manual smoke checks:
 - Splash screen displays animated lightning bolt logo on load
