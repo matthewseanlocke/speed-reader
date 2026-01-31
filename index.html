@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Reader</title>
     <style>
         * {
@@ -708,6 +708,26 @@
                 width: 150px;
             }
         }
+
+        @media (orientation: portrait) and (max-width: 600px) {
+            .word-display {
+                font-size: 50px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-width: 600px) {
+            body {
+                align-items: center;
+            }
+
+            .word-display {
+                font-size: 40px;
+            }
+
+            .reading-controls {
+                bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -830,7 +850,7 @@
 
     <div class="progress-bar" id="progressBar"></div>
 
-    <div class="version-badge" id="versionBadge">v4.28</div>
+    <div class="version-badge" id="versionBadge">v4.29</div>
 
     <script>
         const textInput = document.getElementById('textInput');
@@ -1282,6 +1302,13 @@ For who would bear the whips and scorns of time, Th' oppressor's wrong, the prou
         fontSizeInput.addEventListener('input', () => {
             updatePreview();
             saveSettings();
+        });
+
+        window.addEventListener('resize', () => {
+            if (isReading) {
+                showCurrentWord();
+            }
+            updatePreview();
         });
 
         document.addEventListener('keydown', (e) => {
