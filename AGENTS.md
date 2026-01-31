@@ -8,7 +8,7 @@ No build system, package manager, or automated tests. Runs offline by opening th
 - Entry point: `index.html`
 - Assets: PNG images (reference only)
 - No bundler, no dependencies, no module system
-- Version: v4.33 (pinned to bottom of screen on all views)
+- Version: v4.34 (pinned to bottom of screen on all views)
 
 ## Build / Lint / Test
 No automated build, lint, or test commands.
@@ -97,8 +97,8 @@ Single test: Not available (no test runner)
 - Split into before-orp, orp-letter, after-orp segments
 
 ### Text / Content
-- Default text: random from `textGrabBag` on first load
-- Includes: Pale Blue Dot, The Road Not Taken, I Have a Dream, Gettysburg Address, Hamlet
+- Default text randomly selected from `textGrabBag` on first load
+- Includes: Pale Blue Dot, The Road Not Taken, I Have a Dream, Gettysburg Address, Hamlet, JFK Inaugural, FDR First Inaugural, Patrick Henry's Liberty Speech, Do Not Go Gentle Into That Good Night, Meditations, Walden, Civil Disobedience, Descartes' Meditations, Darwin's Origin of Species, Declaration of Independence
 - Keep default text ASCII-only
 - "Load Random Text" uses grab bag; do not persist to `savedText`
 
