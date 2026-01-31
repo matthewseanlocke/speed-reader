@@ -1,10 +1,10 @@
 # AGENTS.md
 
-This repository is a single-file, static HTML app in `speed-reader.html`.
+This repository is a single-file, static HTML app in `index.html`.
 No build system, package manager, or automated tests. Runs offline by opening the HTML file directly.
 
 ## Repository Overview
-- Entry point: `speed-reader.html`
+- Entry point: `index.html`
 - Assets: PNG images (reference only)
 - No bundler, no dependencies, no module system
 - Version: v4.26 (pinned to bottom of screen on all views)
