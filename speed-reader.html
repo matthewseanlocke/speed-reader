@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Reader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            max-height: 150px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            transition: all 0.3s;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        textarea.highlight {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+            animation: shake 0.5s;
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .settings-section {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(170px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-group.colors-inline {
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .color-picker-inline {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="number"],
+        input[type="color"],
+        select {
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="color"]:focus,
+        select:focus {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .color-picker-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .color-picker-wrapper input[type="color"] {
+            position: absolute;
+            opacity: 0;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .start-btn {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            border: 2px solid rgba(78, 205, 196, 0.8);
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            padding: 25px 50px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .start-btn:hover {
+            box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
+            border-color: #4ecdc4;
+            color: #7de2db;
+            text-shadow: 0 0 15px rgba(78, 205, 196, 0.8);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
+            }
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .stop-btn {
+            background: rgba(255, 107, 107, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .pause-btn {
+            background: rgba(255, 217, 61, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 217, 61, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .word-count {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .settings-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .preview-section {
+            margin-bottom: 20px;
+        }
+
+        .preview-section label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-box {
+            background: black;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .word-display-preview {
+            align-content: center;
+        }
+
+        .word-display-preview {
+            --orp-anchor: 35%;
+            display: grid;
+            grid-template-columns: var(--orp-anchor) auto 1fr;
+            align-items: center;
+            width: 100%;
+            height: 120px;
+        }
+
+        .word-display-preview .before-orp {
+            text-align: right;
+            font-weight: bold;
+            padding-right: 5px;
+            white-space: nowrap;
+        }
+
+        .word-display-preview .orp-letter {
+            text-align: center;
+            font-weight: bold;
+            width: fit-content;
+            white-space: nowrap;
+        }
+
+        .word-display-preview .after-orp {
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            white-space: nowrap;
+        }
+
+        .reading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reading-overlay.active {
+            display: flex;
+        }
+
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 10002;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .countdown-overlay.active {
+            display: flex;
+        }
+
+        .countdown-display {
+            --orp-anchor: 33vw;
+            display: grid;
+            grid-template-columns: var(--orp-anchor) auto 1fr;
+            align-items: center;
+            width: 100%;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        .countdown-display .before-orp {
+            text-align: right;
+            font-weight: bold;
+            padding-right: 5px;
+            white-space: nowrap;
+        }
+
+        .countdown-display .orp-letter {
+            text-align: center;
+            font-weight: bold;
+            width: fit-content;
+            white-space: nowrap;
+        }
+
+        .countdown-display .after-orp {
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            white-space: nowrap;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .reading-controls.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .word-number.hidden {
+            opacity: 0;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 10003;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeOut 1s ease-out 2.5s forwards;
+        }
+
+        .splash-screen.active {
+            display: flex;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        .splash-logo svg {
+            width: 100%;
+            height: 100%;
+            fill: #4ecdc4;
+            filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 40px rgba(78, 205, 196, 0.5));
+            animation: boltFlash 1.5s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes boltFlash {
+            0%, 100% {
+                fill: #4ecdc4;
+                filter: drop-shadow(0 0 20px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 40px rgba(78, 205, 196, 0.5));
+            }
+            50% {
+                fill: #667eea;
+                filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.9)) drop-shadow(0 0 60px rgba(102, 126, 234, 0.6));
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+
+        .word-display {
+            --orp-anchor: 33vw;
+            display: grid;
+            grid-template-columns: var(--orp-anchor) auto 1fr;
+            align-items: center;
+            width: 100%;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .before-orp {
+            text-align: right;
+            font-weight: bold;
+            padding-right: 5px;
+            white-space: nowrap;
+        }
+
+        .orp-letter {
+            text-align: center;
+            font-weight: bold;
+            width: fit-content;
+            white-space: nowrap;
+        }
+
+        .after-orp {
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            white-space: nowrap;
+        }
+
+        .reading-controls {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+        }
+
+        .reading-controls.active {
+            display: flex;
+        }
+
+        .position-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .speed-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 300px;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .speed-display {
+            min-width: 100px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .reading-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reading-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .reading-buttons button svg {
+            width: 36px;
+            height: 36px;
+            fill: currentColor;
+        }
+
+        .restart-btn {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 2px solid rgba(102, 126, 234, 0.8);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5), inset 0 0 20px rgba(102, 126, 234, 0.2);
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+            padding: 20px 30px;
+        }
+
+        .restart-btn:hover {
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.8), inset 0 0 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            color: #7b9fff;
+            text-shadow: 0 0 15px rgba(102, 126, 234, 0.8);
+        }
+
+        .reading-buttons .start-btn {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            border: 2px solid rgba(78, 205, 196, 0.8);
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5), inset 0 0 20px rgba(78, 205, 196, 0.2);
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            padding: 20px 30px;
+        }
+
+        .reading-buttons .start-btn:hover {
+            box-shadow: 0 0 50px rgba(78, 205, 196, 0.8), inset 0 0 30px rgba(78, 205, 196, 0.3);
+            border-color: #4ecdc4;
+            color: #7de2db;
+            text-shadow: 0 0 15px rgba(78, 205, 196, 0.8);
+        }
+
+        .exit-btn {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 2px solid rgba(255, 107, 107, 0.8);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.5), inset 0 0 20px rgba(255, 107, 107, 0.2);
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            padding: 20px 30px;
+        }
+
+        .exit-btn:hover {
+            box-shadow: 0 0 50px rgba(255, 107, 107, 0.8), inset 0 0 30px rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+            color: #ff8f8f;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            z-index: 10001;
+        }
+
+        .word-number {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            z-index: 10001;
+        }
+
+        .version-badge {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            z-index: 10004;
+            pointer-events: none;
+        }
+
+        body {
+            padding-bottom: 50px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 80px;
+            }
+
+            .container {
+                padding: 20px;
+                padding-bottom: 60px;
+            }
+
+            .word-display {
+                font-size: 50px;
+            }
+
+            .word-display-preview {
+                --orp-anchor: 30%;
+            }
+
+            .reading-overlay {
+                padding-bottom: 80px;
+            }
+
+            .reading-controls {
+                bottom: 40px;
+                padding: 15px 20px;
+            }
+
+            .position-slider-container input[type="range"],
+            .speed-slider-container input[type="range"] {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <div class="input-section">
+            <textarea id="textInput" placeholder="Paste your text here..."></textarea>
+        </div>
+
+        <div class="settings-section">
+            <div class="setting-group">
+                <label for="speedInput">Speed (WPM)</label>
+                <input type="number" id="speedInput" value="300" min="50" max="1000" step="10">
+            </div>
+
+            <div class="setting-group">
+                <label for="fontSelect">Font</label>
+                <select id="fontSelect">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label for="caseSelect">Text Case</label>
+                <select id="caseSelect">
+                    <option value="normal">Normal</option>
+                    <option value="uppercase">UPPERCASE</option>
+                    <option value="lowercase">lowercase</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label for="fontSizeInput">Font Size (px)</label>
+                <input type="number" id="fontSizeInput" value="150" min="40" max="150" step="5">
+            </div>
+
+            <div class="setting-group colors-inline">
+                <div class="color-picker-inline">
+                    <label for="colorInput">Text Color</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="colorInput" value="#ffffff">
+                        <div class="color-preview" id="colorPreview" style="background: #ffffff;"></div>
+                    </div>
+                </div>
+
+                <div class="color-picker-inline">
+                    <label for="redColorInput">ORP Color</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="redColorInput" value="#ff4444">
+                        <div class="color-preview" id="redColorPreview" style="background: #ff4444;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="secondary-btn" id="loadRandomBtn">Load Random Text</button>
+            <button class="secondary-btn" id="resetStylesBtn">Clear Styling</button>
+        </div>
+
+        <div class="preview-section">
+            <div class="preview-box" id="previewBox">
+                <div class="word-display-preview" id="wordDisplayPreview"></div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="start-btn" id="startBtn">
+                <svg viewBox="0 0 24 24" style="width: 80px; height: 80px; fill: currentColor;"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="reading-overlay" id="readingOverlay">
+        <div class="word-display" id="wordDisplay"></div>
+        <div class="word-number" id="wordNumber"></div>
+    </div>
+
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-display" id="countdownDisplay">5</div>
+    </div>
+
+    <div class="reading-controls" id="readingControls">
+        <div class="position-slider-container">
+            <span>Position:</span>
+            <input type="range" id="positionSlider" min="0" max="100" value="0" step="1">
+            <span class="position-display" id="positionDisplay">0 / 0</span>
+        </div>
+        <div class="speed-slider-container">
+            <span>Speed:</span>
+            <input type="range" id="speedSlider" min="50" max="1000" value="300" step="10">
+            <span class="speed-display" id="speedDisplay">300 WPM</span>
+        </div>
+        <div class="reading-buttons">
+            <button class="restart-btn" id="restartBtn">
+                <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            </button>
+            <button class="start-btn" id="resumeBtn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="exit-btn" id="exitBtn">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                Exit
+            </button>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="version-badge" id="versionBadge">v4.26</div>
+
+    <script>
+        const textInput = document.getElementById('textInput');
+        const wordCount = document.getElementById('wordCount');
+        const speedInput = document.getElementById('speedInput');
+        const fontSelect = document.getElementById('fontSelect');
+        const colorInput = document.getElementById('colorInput');
+        const colorPreview = document.getElementById('colorPreview');
+        const caseSelect = document.getElementById('caseSelect');
+        const fontSizeInput = document.getElementById('fontSizeInput');
+        const redColorInput = document.getElementById('redColorInput');
+        const redColorPreview = document.getElementById('redColorPreview');
+        const startBtn = document.getElementById('startBtn');
+        const loadRandomBtn = document.getElementById('loadRandomBtn');
+        const resetStylesBtn = document.getElementById('resetStylesBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const exitBtn = document.getElementById('exitBtn');
+        const readingOverlay = document.getElementById('readingOverlay');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const readingControls = document.getElementById('readingControls');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const positionSlider = document.getElementById('positionSlider');
+        const positionDisplay = document.getElementById('positionDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const wordNumber = document.getElementById('wordNumber');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownDisplay = document.getElementById('countdownDisplay');
+        const wordDisplayPreview = document.getElementById('wordDisplayPreview');
+        const splashScreen = document.getElementById('splashScreen');
+
+        let words = [];
+        let currentIndex = 0;
+        let isReading = false;
+        let isPaused = false;
+        let intervalId = null;
+        let currentSpeed = 300;
+        let controlsHidden = true;
+        let textIsDefault = true;
+
+        const textGrabBag = [
+            `From this distant vantage point, the Earth might not seem of any particular interest. But for us, it's different. Look again at that dot. That's here. That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives. The aggregate of our joy and suffering, thousands of confident religions, ideologies, and economic doctrines, every hunter and forager, every hero and coward, every creator and destroyer of civilization, every king and peasant, every young couple in love, every mother and father, hopeful child, inventor and explorer, every teacher of morals, every corrupt politician, every "superstar," every "supreme leader," every saint and sinner in the history of our species lived there—on a mote of dust suspended in a sunbeam.
+
+The Earth is a very small stage in a vast cosmic arena. Think of the rivers of blood spilled by all those generals and emperors so that, in glory and triumph, they could become the momentary masters of a fraction of a dot. Think of the endless cruelties visited by the inhabitants of one corner of this pixel on the scarcely distinguishable inhabitants of some other corner, how frequent their misunderstandings, how eager they are to kill one another, how fervent their hatreds.
+
+Our posturings, our imagined self-importance, the delusion that we have some privileged position in the Universe, are challenged by this point of pale light. Our planet is a lonely speck in the great enveloping cosmic dark. In our obscurity, in all this vastness, there is no hint that help will come from elsewhere to save us from ourselves.
+
+The Earth is the only world known so far to harbor life. There is nowhere else, at least in the near future, to which our species could migrate. Visit, yes. Settle, not yet. Like it or not, for the moment the Earth is where we make our stand.
+
+It has been said that astronomy is a humbling and character-building experience. There is perhaps no better demonstration of the folly of human conceits than this distant image of our tiny world. To me, it underscores our responsibility to deal more kindly with one another, and to preserve and cherish the pale blue dot, the only home we've ever known.`,
+
+            `Two roads diverged in a yellow wood,
+And sorry I could not travel both
+And be one traveler, long I stood
+And looked down one as far as I could
+To where it bent in the undergrowth;
+
+Then took the other, as just as fair,
+And having perhaps the better claim,
+Because it was grassy and wanted wear;
+Though as for that the passing there
+Had worn them really about the same,
+
+And both that morning equally lay
+In leaves no step had trodden black.
+Oh, I kept the first for another day!
+Yet knowing how way leads on to way,
+I doubted if I should ever come back.
+
+I shall be telling this with a sigh
+Somewhere ages and ages hence:
+Two roads diverged in a wood, and I—
+I took the one less traveled by,
+And that has made all the difference.`,
+
+            `I have a dream that one day this nation will rise up and live out the true meaning of its creed: "We hold these truths to be self-evident, that all men are created equal." I have a dream that one day on the red hills of Georgia, the sons of former slaves and the sons of former slave owners will be able to sit down together at the table of brotherhood.
+
+I have a dream that one day even the state of Mississippi, a state sweltering with the heat of injustice, sweltering with the heat of oppression, will be transformed into an oasis of freedom and justice. I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.
+
+I have a dream today. I have a dream that one day, down in Alabama, with its vicious racists, with its governor having his lips dripping with the words of interposition and nullification, one day right there in Alabama little black boys and black girls will be able to join hands with little white boys and white girls as sisters and brothers.
+
+I have a dream today. I have a dream that one day every valley shall be exalted, every hill and mountain shall be made low, the rough places will be made plain, and the crooked places will be made straight, and the glory of the Lord shall be revealed, and all flesh shall see it together.`,
+
+            `Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.
+
+Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.
+
+But, in a larger sense, we can not dedicate—we can not consecrate—we can not hallow—this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced.
+
+It is rather for us to be here dedicated to the great task remaining before us—that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion—that we here highly resolve that these dead shall not have died in vain—that this nation, under God, shall have a new birth of freedom—and that government of the people, by the people, for the people, shall not perish from the earth.`,
+
+            `To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, Or to take arms against a sea of troubles And by opposing end them. To die—to sleep, No more; and by a sleep to say we end The heart-ache and the thousand natural shocks That flesh is heir to: 'tis a consummation Devoutly to be wish'd. To die, to sleep; To sleep, perchance to dream—ay, there's the rub: For in that sleep of death what dreams may come, When we have shuffled off this mortal coil, Must give us pause—there's the respect That makes calamity of so long life.
+
+For who would bear the whips and scorns of time, Th' oppressor's wrong, the proud man's contumely, The pangs of dispriz'd love, the law's delay, The insolence of office, and the spurns That patient merit of th' unworthy takes, When he himself might his quietus make With a bare bodkin? Who would fardels bear, To grunt and sweat under a weary life, But that the dread of something after death, The undiscover'd country, from whose bourn No traveller returns, puzzles the will, And makes us rather bear those ills we have Than fly to others that we know not of?`
+        ];
+
+        function loadSettings() {
+            const savedColor = localStorage.getItem('textColor');
+            const savedRedColor = localStorage.getItem('redColor');
+            const savedFont = localStorage.getItem('fontFamily');
+            const savedCase = localStorage.getItem('textCase');
+            const savedFontSize = localStorage.getItem('fontSize');
+
+            if (savedColor) colorInput.value = savedColor;
+            if (savedRedColor) redColorInput.value = savedRedColor;
+            if (savedFont) fontSelect.value = savedFont;
+            if (savedCase) caseSelect.value = savedCase;
+            if (savedFontSize) fontSizeInput.value = savedFontSize;
+
+            const savedText = localStorage.getItem('savedText');
+            if (savedText) {
+                textInput.value = savedText;
+                textIsDefault = false;
+            } else {
+                const randomIndex = Math.floor(Math.random() * textGrabBag.length);
+                textInput.value = textGrabBag[randomIndex];
+                textIsDefault = true;
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('textColor', colorInput.value);
+            localStorage.setItem('redColor', redColorInput.value);
+            localStorage.setItem('fontFamily', fontSelect.value);
+            localStorage.setItem('textCase', caseSelect.value);
+            localStorage.setItem('fontSize', fontSizeInput.value);
+            if (!textIsDefault) {
+                localStorage.setItem('savedText', textInput.value);
+            }
+        }
+
+        function resetStyles() {
+            fontSelect.value = "Arial, sans-serif";
+            caseSelect.value = "normal";
+            fontSizeInput.value = "150";
+            colorInput.value = "#ffffff";
+            redColorInput.value = "#ff4444";
+            colorPreview.style.background = colorInput.value;
+            redColorPreview.style.background = redColorInput.value;
+            updatePreview();
+            if (isReading) {
+                showCurrentWord();
+            }
+            saveSettings();
+        }
+
+        textInput.addEventListener('input', () => {
+            textIsDefault = false;
+            updateWordCount();
+            saveSettings();
+        });
+        
+        function updateWordCount() {
+            const text = textInput.value.trim();
+            words = text.split(/\s+/).filter(word => word.length > 0);
+            if (wordCount) {
+                wordCount.textContent = `${words.length} words`;
+            }
+        }
+
+        function formatWord(word, isPreview = false) {
+            let formatted = word;
+            
+            if (caseSelect.value === 'uppercase') {
+                formatted = formatted.toUpperCase();
+            } else if (caseSelect.value === 'lowercase') {
+                formatted = formatted.toLowerCase();
+            }
+            
+            if (formatted.length > 0) {
+                let orpIndex;
+                if (formatted.length <= 4) {
+                    orpIndex = 0;
+                } else if (formatted.length <= 7) {
+                    orpIndex = 1;
+                } else {
+                    orpIndex = Math.floor(formatted.length * 0.35);
+                }
+                
+                const beforeOrp = formatted.slice(0, orpIndex);
+                const orpLetter = formatted[orpIndex];
+                const afterOrp = formatted.slice(orpIndex + 1);
+                
+                const textColor = colorInput.value;
+                const orpColor = redColorInput.value;
+                const fontSize = parseInt(fontSizeInput.value);
+                const previewFontSize = isPreview ? fontSize * 0.6 : fontSize;
+                
+                formatted = `<span class="before-orp" style="color: ${textColor}; font-size: ${previewFontSize}px;">${beforeOrp}</span><span class="orp-letter" style="color: ${orpColor}; font-size: ${previewFontSize}px;">${orpLetter}</span><span class="after-orp" style="color: ${textColor}; font-size: ${previewFontSize}px;">${afterOrp}</span>`;
+            }
+            
+            return formatted;
+        }
+
+        function updatePreview() {
+            const sampleWord = 'reading';
+            wordDisplayPreview.innerHTML = formatWord(sampleWord, true);
+            wordDisplayPreview.style.fontFamily = fontSelect.value;
+        }
+
+        function applySettings() {
+            wordDisplay.style.fontFamily = fontSelect.value;
+        }
+
+        function updateSpeed(speed) {
+            currentSpeed = speed;
+            speedDisplay.textContent = `${speed} WPM`;
+            
+            if (isReading && !isPaused) {
+                clearInterval(intervalId);
+                startInterval();
+            }
+        }
+
+        function startInterval() {
+            clearInterval(intervalId);
+            const delay = 60000 / currentSpeed;
+            intervalId = setInterval(showNextWord, delay);
+        }
+
+        function showNextWord() {
+            if (currentIndex >= words.length) {
+                stopReading();
+                return;
+            }
+
+            wordDisplay.innerHTML = formatWord(words[currentIndex]);
+            wordNumber.textContent = `${currentIndex + 1} / ${words.length}`;
+            
+            const progress = ((currentIndex + 1) / words.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            positionSlider.value = currentIndex;
+            updatePositionDisplay();
+            
+            currentIndex++;
+        }
+
+        function startReading() {
+            const text = textInput.value.trim();
+
+            if (!text || words.length === 0) {
+                textInput.classList.add('highlight');
+                textInput.focus();
+                setTimeout(() => {
+                    textInput.classList.remove('highlight');
+                }, 500);
+                return;
+            }
+
+            updateWordCount();
+
+            currentSpeed = parseInt(speedInput.value);
+            speedSlider.value = currentSpeed;
+            speedDisplay.textContent = `${currentSpeed} WPM`;
+            
+            positionSlider.max = words.length - 1;
+            positionSlider.value = 0;
+            updatePositionDisplay();
+            
+            currentIndex = 0;
+            isReading = true;
+            isPaused = false;
+            
+            applySettings();
+            
+            readingOverlay.classList.add('active');
+            readingControls.classList.add('active');
+            
+            showBeginScreen(() => {
+                hideControls();
+                startInterval();
+            });
+        }
+
+        function pauseReading() {
+            isPaused = true;
+            clearInterval(intervalId);
+            showControls();
+        }
+
+        function resumeReading() {
+            isPaused = false;
+            hideControls();
+            startInterval();
+        }
+
+        function restartReading() {
+            currentIndex = 0;
+            positionSlider.value = 0;
+            updatePositionDisplay();
+            showCurrentWord();
+            
+            showBeginScreen(() => {
+                isPaused = false;
+                hideControls();
+                startInterval();
+            });
+        }
+
+        function showCurrentWord() {
+            if (currentIndex >= words.length) {
+                currentIndex = words.length - 1;
+            }
+
+            if (currentIndex < 0) {
+                currentIndex = 0;
+            }
+
+            wordDisplay.innerHTML = formatWord(words[currentIndex]);
+            wordNumber.textContent = `${currentIndex + 1} / ${words.length}`;
+            
+            const progress = words.length > 0 ? ((currentIndex + 1) / words.length) * 100 : 0;
+            progressBar.style.width = `${progress}%`;
+            positionSlider.value = currentIndex;
+            updatePositionDisplay();
+        }
+
+        function updatePositionDisplay() {
+            positionDisplay.textContent = `${currentIndex + 1} / ${words.length}`;
+        }
+
+        function showBeginScreen(callback) {
+            countdownOverlay.classList.add('active');
+            const fontSize = parseInt(fontSizeInput.value);
+            countdownDisplay.style.fontSize = `${fontSize}px`;
+            countdownDisplay.style.fontFamily = fontSelect.value;
+            countdownDisplay.innerHTML = formatWord(words[0] || 'begin', false);
+
+            countdownOverlay.onclick = () => {
+                countdownOverlay.classList.remove('active');
+                countdownOverlay.onclick = null;
+                callback();
+            };
+        }
+
+        function showControls() {
+            controlsHidden = false;
+            readingControls.classList.remove('hidden');
+            wordNumber.classList.remove('hidden');
+        }
+
+        function hideControls() {
+            controlsHidden = true;
+            readingControls.classList.add('hidden');
+            wordNumber.classList.add('hidden');
+        }
+
+        function exitReading() {
+            isReading = false;
+            isPaused = false;
+            clearInterval(intervalId);
+            
+            readingOverlay.classList.remove('active');
+            readingControls.classList.remove('active');
+            readingControls.classList.remove('hidden');
+            wordNumber.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            
+            startBtn.disabled = false;
+            controlsHidden = true;
+            
+            positionDisplay.textContent = '0 / 0';
+        }
+
+        startBtn.addEventListener('click', startReading);
+        restartBtn.addEventListener('click', restartReading);
+        resumeBtn.addEventListener('click', resumeReading);
+        exitBtn.addEventListener('click', exitReading);
+        resetStylesBtn.addEventListener('click', resetStyles);
+
+        loadRandomBtn.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * textGrabBag.length);
+            textInput.value = textGrabBag[randomIndex];
+            textIsDefault = true;
+            localStorage.removeItem('savedText');
+            updateWordCount();
+            updatePreview();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!isReading) {
+                return;
+            }
+
+            if (!readingOverlay.classList.contains('active')) {
+                return;
+            }
+
+            if (readingControls.contains(e.target)) {
+                return;
+            }
+
+            if (readingOverlay.contains(e.target)) {
+                if (isPaused) {
+                    resumeReading();
+                } else {
+                    pauseReading();
+                }
+            }
+        }, true);
+
+        speedSlider.addEventListener('input', (e) => {
+            updateSpeed(parseInt(e.target.value));
+        });
+
+        positionSlider.addEventListener('input', (e) => {
+            const newIndex = parseInt(e.target.value);
+            clearInterval(intervalId);
+            currentIndex = newIndex;
+            showCurrentWord();
+            
+            if (!isPaused) {
+                startInterval();
+            }
+        });
+
+        speedInput.addEventListener('change', (e) => {
+            let speed = parseInt(e.target.value);
+            if (speed < 50) speed = 50;
+            if (speed > 1000) speed = 1000;
+            speedInput.value = speed;
+        });
+
+        fontSelect.addEventListener('change', () => {
+            updatePreview();
+            saveSettings();
+        });
+        colorInput.addEventListener('input', (e) => {
+            colorPreview.style.background = e.target.value;
+            updatePreview();
+            if (isReading) {
+                showCurrentWord();
+            }
+            saveSettings();
+        });
+        caseSelect.addEventListener('change', () => {
+            updatePreview();
+            saveSettings();
+        });
+        redColorInput.addEventListener('input', (e) => {
+            redColorPreview.style.background = e.target.value;
+            updatePreview();
+            if (isReading) {
+                showCurrentWord();
+            }
+            saveSettings();
+        });
+        fontSizeInput.addEventListener('input', () => {
+            updatePreview();
+            saveSettings();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && countdownOverlay.classList.contains('active')) {
+                e.preventDefault();
+                if (countdownOverlay.onclick) {
+                    countdownOverlay.onclick();
+                }
+            } else if (e.code === 'Space' && isReading) {
+                e.preventDefault();
+                if (isPaused) {
+                    resumeReading();
+                } else {
+                    pauseReading();
+                }
+            } else if (e.code === 'Escape' && isReading) {
+                exitReading();
+            }
+        });
+
+        splashScreen.classList.add('active');
+
+        loadSettings();
+        updateWordCount();
+        updatePreview();
+        colorPreview.style.background = colorInput.value;
+        redColorPreview.style.background = redColorInput.value;
+    </script>
+</body>
+</html>

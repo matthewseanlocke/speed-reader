@@ -1,0 +1,5 @@
+# Reference images (not part of the app)
+*.png
+*.jpg
+*.jpeg
+*.gif
